@@ -331,6 +331,7 @@ contract ArrakisStandardManager is
         whenNotPaused
         onlyWhitelistedVault(vault_)
     {
+
         VaultInfo memory info = vaultInfo[vault_];
 
         if (info.executor != msg.sender) revert NotExecutor();
@@ -399,8 +400,7 @@ contract ArrakisStandardManager is
         // #region assertions.
 
         // check if the underlying protocol price has not been
-        // manipulated during rebalance.
-        // that can indicate a sandwich attack.
+        // manipulated during rebalance, which could indicate a sandwich attack.
         module.validateRebalance(info.oracle, info.maxDeviation);
 
         (amount0, amount1) =

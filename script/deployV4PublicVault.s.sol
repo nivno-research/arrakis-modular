@@ -206,8 +206,7 @@ contract DeployV4PublicVault is CreateXScript {
             maxSlippage
         );
 
-        address vault = IArrakisMetaVaultFactory(factory)
-            .deployPublicVault(
+        address vault = IArrakisMetaVaultFactory(factory).deployPublicVault(
             salt,
             token0,
             token1,

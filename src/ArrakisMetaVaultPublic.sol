@@ -43,11 +43,7 @@ contract ArrakisMetaVaultPublic is
         _symbol = symbol_;
     }
 
-    /// @notice function used to mint share of the vault position
-    /// @param shares_ amount representing the part of the position owned by receiver.
-    /// @param receiver_ address where share token will be sent.
-    /// @return amount0 amount of token0 deposited.
-    /// @return amount1 amount of token1 deposited.
+    /// @inheritdoc IArrakisMetaVaultPublic
     function mint(
         uint256 shares_,
         address receiver_
@@ -63,7 +59,7 @@ contract ArrakisMetaVaultPublic is
 
         if (supply == 0) {
             _mint(address(0), MINIMUM_LIQUIDITY);
-            shares_ = shares_ - MINIMUM_LIQUIDITY;
+            shares_ -= MINIMUM_LIQUIDITY;
         }
 
         _mint(receiver_, shares_);
@@ -73,11 +69,7 @@ contract ArrakisMetaVaultPublic is
         emit LogMint(shares_, receiver_, amount0, amount1);
     }
 
-    /// @notice function used to burn share of the vault position.
-    /// @param shares_ amount of share that will be burn.
-    /// @param receiver_ address where underlying tokens will be sent.
-    /// @return amount0 amount of token0 withdrawn.
-    /// @return amount1 amount of token1 withdrawn.
+    /// @inheritdoc IArrakisMetaVaultPublic
     function burn(
         uint256 shares_,
         address receiver_
@@ -119,13 +111,13 @@ contract ArrakisMetaVaultPublic is
 
     // #endregion Ownable functions.
 
-    /// @notice function used to get the name of the LP token.
+    /// @notice function used to get the name of the shares token.
     /// @return name string value containing the name.
     function name() public view override returns (string memory) {
         return _name;
     }
 
-    /// @notice function used to get the symbol of the LP token.
+    /// @notice function used to get the symbol of shares token.
     /// @return symbol string value containing the symbol.
     function symbol() public view override returns (string memory) {
         return _symbol;

@@ -115,14 +115,29 @@ contract UniV4StandardModuleTest is TestWrapper {
 
     // #endregion mocks contracts.
 
+    /// @notice Specifies the different actions that can be used as callback
+    /// of `poolManager` when unlocking. Each variant of this enum docuemnts
+    /// all the arguments to pass encoded to the callback. For example, for
+    /// `INITIALIZE_POOL`:
+    /// ```sol
+    /// poolManager.unlock(abi.encode(
+    ///     PoolManagerCallback.INITIALIZE_POOL,
+    ///     abi.encode(poolKey, sqrtPriceX96)
+    /// ))
+    /// ```
+    enum PoolManagerCallback {
+        /// @param poolKey: PoolKey the pool key of the pool to create.
+        /// @param sqrtPriceX96: uint160 the sqrtPrice to initialize the pool with.
+        INITIALIZE_POOL
+    }
+
     UniV4StandardModulePublic public module;
 
     function setUp() public {
         manager = vm.addr(uint256(keccak256(abi.encode("Manager"))));
         pauser = vm.addr(uint256(keccak256(abi.encode("Pauser"))));
         owner = vm.addr(uint256(keccak256(abi.encode("Owner"))));
-        collector =
-            vm.addr(uint256(keccak256(abi.encode("Collector"))));
+        collector = vm.addr(uint256(keccak256(abi.encode("Collector"))));
 
         // #region meta vault creation.
 
@@ -149,8 +164,7 @@ contract UniV4StandardModuleTest is TestWrapper {
 
         // #region create resolver.
 
-        resolver =
-            new UniV4StandardModuleResolver(address(poolManager));
+        resolver = new UniV4StandardModuleResolver(address(poolManager));
 
         // #endregion create resolver.
 
@@ -167,7 +181,12 @@ contract UniV4StandardModuleTest is TestWrapper {
 
         sqrtPriceX96 = 1_356_476_084_642_877_807_665_053_548_195_417;
 
-        poolManager.unlock(abi.encode(2));
+        // poolManager.unlock(abi.encode(
+        //     PoolManagerCallback.INITIALIZE_POOL,
+        //     abi.encode(poolKey, sqrtPriceX96)
+        // ))
+
+        poolManager.initialize(poolKey, sqrtPriceX96);
 
         // #endregion create a pool.
 
@@ -219,9 +238,11 @@ contract UniV4StandardModuleTest is TestWrapper {
         uint256 typeOfLockAcquired = abi.decode(data, (uint256));
 
         // if (typeOfLockAcquired == 0) _lockAcquiredAddPosition();
+
         if (typeOfLockAcquired == 1) {
             _lockAcquiredSwap();
         }
+
         if (typeOfLockAcquired == 2) {
             poolManager.initialize(poolKey, sqrtPriceX96);
         }
@@ -364,7 +385,7 @@ contract UniV4StandardModuleTest is TestWrapper {
             hooks: IHooks(address(0))
         });
 
-        poolManager.unlock(abi.encode(2));
+        poolManager.initialize(poolKey, sqrtPriceX96);
 
         address implmentation = address(
             new UniV4StandardModulePublic(
@@ -412,7 +433,7 @@ contract UniV4StandardModuleTest is TestWrapper {
             hooks: IHooks(address(0))
         });
 
-        poolManager.unlock(abi.encode(2));
+        poolManager.initialize(poolKey, sqrtPriceX96);
 
         address implmentation = address(
             new UniV4StandardModulePublic(
@@ -458,7 +479,7 @@ contract UniV4StandardModuleTest is TestWrapper {
             hooks: IHooks(address(0))
         });
 
-        poolManager.unlock(abi.encode(2));
+        poolManager.initialize(poolKey, sqrtPriceX96);
 
         address implmentation = address(
             new UniV4StandardModulePublic(
@@ -504,7 +525,7 @@ contract UniV4StandardModuleTest is TestWrapper {
             hooks: IHooks(address(0))
         });
 
-        poolManager.unlock(abi.encode(2));
+        poolManager.initialize(poolKey, sqrtPriceX96);
 
         address implmentation = address(
             new UniV4StandardModulePublic(
@@ -552,7 +573,7 @@ contract UniV4StandardModuleTest is TestWrapper {
             hooks: IHooks(address(0))
         });
 
-        poolManager.unlock(abi.encode(2));
+        poolManager.initialize(poolKey, sqrtPriceX96);
 
         address implmentation = address(
             new UniV4StandardModulePublic(
@@ -600,7 +621,7 @@ contract UniV4StandardModuleTest is TestWrapper {
             hooks: IHooks(address(0))
         });
 
-        poolManager.unlock(abi.encode(2));
+        poolManager.initialize(poolKey, sqrtPriceX96);
 
         address implmentation = address(
             new UniV4StandardModulePublic(
@@ -648,7 +669,7 @@ contract UniV4StandardModuleTest is TestWrapper {
             hooks: IHooks(address(0))
         });
 
-        poolManager.unlock(abi.encode(2));
+        poolManager.initialize(poolKey, sqrtPriceX96);
 
         address implmentation = address(
             new UniV4StandardModulePublic(
@@ -692,7 +713,7 @@ contract UniV4StandardModuleTest is TestWrapper {
             hooks: IHooks(address(0))
         });
 
-        poolManager.unlock(abi.encode(2));
+        poolManager.initialize(poolKey, sqrtPriceX96);
 
         address implmentation = address(
             new UniV4StandardModulePublic(
@@ -743,7 +764,7 @@ contract UniV4StandardModuleTest is TestWrapper {
             hooks: IHooks(address(hook))
         });
 
-        poolManager.unlock(abi.encode(2));
+        poolManager.initialize(poolKey, sqrtPriceX96);
 
         address implmentation = address(
             new UniV4StandardModulePublic(
@@ -793,7 +814,7 @@ contract UniV4StandardModuleTest is TestWrapper {
             hooks: IHooks(address(hook))
         });
 
-        poolManager.unlock(abi.encode(2));
+        poolManager.initialize(poolKey, sqrtPriceX96);
         address implmentation = address(
             new UniV4StandardModulePublic(
                 address(poolManager), guardian, distributor, collector
@@ -864,7 +885,7 @@ contract UniV4StandardModuleTest is TestWrapper {
 
         poolKey.tickSpacing = 20;
 
-        poolManager.unlock(abi.encode(2));
+        poolManager.initialize(poolKey, sqrtPriceX96);
 
         address implmentation = address(
             new UniV4StandardModulePublic(
@@ -933,7 +954,7 @@ contract UniV4StandardModuleTest is TestWrapper {
 
         sqrtPriceX96 = 1_356_476_084_642_877_807_665_053_548_195_417;
 
-        poolManager.unlock(abi.encode(2));
+        poolManager.initialize(poolKey, sqrtPriceX96);
 
         uint256 init0 = 3000e6;
         uint256 init1 = 1e18;
@@ -1071,7 +1092,7 @@ contract UniV4StandardModuleTest is TestWrapper {
 
         sqrtPriceX96 = 4_073_749_093_844_602_324_196_220; // 2645,5 USDC/WETH.
 
-        poolManager.unlock(abi.encode(2));
+        poolManager.initialize(poolKey, sqrtPriceX96);
 
         ArrakisMetaVaultMock(metaVault).setTokens(USDC, NATIVE_COIN);
 
@@ -1173,7 +1194,7 @@ contract UniV4StandardModuleTest is TestWrapper {
 
         sqrtPriceX96 = 4_073_749_093_844_602_324_196_220; // 2645,5 USDC/WETH.
 
-        poolManager.unlock(abi.encode(2));
+        poolManager.initialize(poolKey, sqrtPriceX96);
 
         ArrakisMetaVaultMock(metaVault).setTokens(NATIVE_COIN, USDC);
 
@@ -1335,7 +1356,7 @@ contract UniV4StandardModuleTest is TestWrapper {
             hooks: IHooks(address(hook))
         });
 
-        poolManager.unlock(abi.encode(2));
+        poolManager.initialize(poolKey, sqrtPriceX96);
 
         IUniV4StandardModule.LiquidityRange[] memory liquidityRange =
             new IUniV4StandardModule.LiquidityRange[](0);
@@ -1368,7 +1389,7 @@ contract UniV4StandardModuleTest is TestWrapper {
             hooks: IHooks(address(hook))
         });
 
-        poolManager.unlock(abi.encode(2));
+        poolManager.initialize(poolKey, sqrtPriceX96);
 
         IUniV4StandardModule.LiquidityRange[] memory liquidityRange =
             new IUniV4StandardModule.LiquidityRange[](0);
@@ -1414,7 +1435,7 @@ contract UniV4StandardModuleTest is TestWrapper {
             hooks: IHooks(address(0))
         });
 
-        poolManager.unlock(abi.encode(2));
+        poolManager.initialize(poolKey, sqrtPriceX96);
 
         IUniV4StandardModule.LiquidityRange[] memory liquidityRange =
             new IUniV4StandardModule.LiquidityRange[](0);
@@ -1459,7 +1480,7 @@ contract UniV4StandardModuleTest is TestWrapper {
             hooks: IHooks(address(0))
         });
 
-        poolManager.unlock(abi.encode(2));
+        poolManager.initialize(poolKey, sqrtPriceX96);
 
         // #region do rebalance payload.
 
@@ -1479,8 +1500,7 @@ contract UniV4StandardModuleTest is TestWrapper {
             init1
         );
 
-        IUniV4StandardModule.LiquidityRange memory liquidityRange =
-        IUniV4StandardModule.LiquidityRange({
+        IUniV4StandardModule.LiquidityRange memory liquidityRange = IUniV4StandardModule.LiquidityRange({
             range: range,
             liquidity: SafeCast.toInt128(
                 SafeCast.toInt256(uint256(liquidity))
@@ -1534,7 +1554,7 @@ contract UniV4StandardModuleTest is TestWrapper {
             hooks: IHooks(address(0))
         });
 
-        poolManager.unlock(abi.encode(2));
+        poolManager.initialize(poolKey, sqrtPriceX96);
 
         // #region do rebalance payload.
 
@@ -1610,7 +1630,7 @@ contract UniV4StandardModuleTest is TestWrapper {
             hooks: IHooks(address(0))
         });
 
-        poolManager.unlock(abi.encode(2));
+        poolManager.initialize(poolKey, sqrtPriceX96);
 
         // #region do rebalance payload.
 
@@ -1686,7 +1706,7 @@ contract UniV4StandardModuleTest is TestWrapper {
             hooks: IHooks(address(0))
         });
 
-        poolManager.unlock(abi.encode(2));
+        poolManager.initialize(poolKey, sqrtPriceX96);
 
         // #region do rebalance payload.
 
@@ -1707,12 +1727,12 @@ contract UniV4StandardModuleTest is TestWrapper {
         );
 
         IUniV4StandardModule.LiquidityRange memory liquidityRange =
-        IUniV4StandardModule.LiquidityRange({
-            range: range,
-            liquidity: SafeCast.toInt128(
-                SafeCast.toInt256(uint256(liquidity))
-            )
-        });
+            IUniV4StandardModule.LiquidityRange({
+                range: range,
+                liquidity: SafeCast.toInt128(
+                    SafeCast.toInt256(uint256(liquidity))
+                )
+            });
 
         IUniV4StandardModule.LiquidityRange[] memory liquidityRanges =
             new IUniV4StandardModule.LiquidityRange[](1);
@@ -1768,7 +1788,7 @@ contract UniV4StandardModuleTest is TestWrapper {
             hooks: IHooks(address(0))
         });
 
-        poolManager.unlock(abi.encode(2));
+        poolManager.initialize(poolKey, sqrtPriceX96);
 
         // #region do rebalance payload.
 
@@ -1891,7 +1911,7 @@ contract UniV4StandardModuleTest is TestWrapper {
             hooks: IHooks(address(0))
         });
 
-        poolManager.unlock(abi.encode(2));
+        poolManager.initialize(poolKey, sqrtPriceX96);
 
         IUniV4StandardModule.LiquidityRange[] memory l =
             new IUniV4StandardModule.LiquidityRange[](0);
@@ -2552,7 +2572,7 @@ contract UniV4StandardModuleTest is TestWrapper {
 
         sqrtPriceX96 = 4_363_802_021_784_129_436_505_493;
 
-        poolManager.unlock(abi.encode(2));
+        poolManager.initialize(poolKey, sqrtPriceX96);
 
         // #region create uni v4 module.
 
@@ -2615,7 +2635,7 @@ contract UniV4StandardModuleTest is TestWrapper {
 
         sqrtPriceX96 = 4_363_802_021_784_129_436_505_493;
 
-        poolManager.unlock(abi.encode(2));
+        poolManager.initialize(poolKey, sqrtPriceX96);
 
         // #region create uni v4 module.
 
@@ -2679,7 +2699,7 @@ contract UniV4StandardModuleTest is TestWrapper {
 
         sqrtPriceX96 = 4_363_802_021_784_129_436_505_493;
 
-        poolManager.unlock(abi.encode(2));
+        poolManager.initialize(poolKey, sqrtPriceX96);
 
         // #region create uni v4 module.
 
@@ -2744,7 +2764,7 @@ contract UniV4StandardModuleTest is TestWrapper {
 
         sqrtPriceX96 = 4_363_802_021_784_129_436_505_493;
 
-        poolManager.unlock(abi.encode(2));
+        poolManager.initialize(poolKey, sqrtPriceX96);
 
         // #region create uni v4 module.
 
@@ -2867,7 +2887,7 @@ contract UniV4StandardModuleTest is TestWrapper {
 
         sqrtPriceX96 = 4_363_802_021_784_129_436_505_493;
 
-        poolManager.unlock(abi.encode(2));
+        poolManager.initialize(poolKey, sqrtPriceX96);
 
         // #region create uni v4 module.
 
@@ -2930,7 +2950,7 @@ contract UniV4StandardModuleTest is TestWrapper {
 
         sqrtPriceX96 = 4_363_802_021_784_129_436_505_493;
 
-        poolManager.unlock(abi.encode(2));
+        poolManager.initialize(poolKey, sqrtPriceX96);
 
         // #region create uni v4 module.
 
@@ -2993,7 +3013,7 @@ contract UniV4StandardModuleTest is TestWrapper {
 
         sqrtPriceX96 = 4_363_802_021_784_129_436_505_493;
 
-        poolManager.unlock(abi.encode(2));
+        poolManager.initialize(poolKey, sqrtPriceX96);
 
         // #region create uni v4 module.
 
@@ -4747,7 +4767,7 @@ contract UniV4StandardModuleTest is TestWrapper {
 
         sqrtPriceX96 = 1_546_089_921_970_950_693_041_566_601_029_373; // 2626,5 USDC/WETH.
 
-        poolManager.unlock(abi.encode(2));
+        poolManager.initialize(poolKey, sqrtPriceX96);
 
         {
             address implementation = address(
@@ -4910,7 +4930,7 @@ contract UniV4StandardModuleTest is TestWrapper {
 
         sqrtPriceX96 = 1_546_089_921_970_950_693_041_566_601_029_373; // 2626,5 USDC/WETH.
 
-        poolManager.unlock(abi.encode(2));
+        poolManager.initialize(poolKey, sqrtPriceX96);
 
         {
             address implementation = address(
@@ -5063,7 +5083,7 @@ contract UniV4StandardModuleTest is TestWrapper {
 
         sqrtPriceX96 = 4_073_749_093_844_602_324_196_220; // 2645,5 USDC/WETH.
 
-        poolManager.unlock(abi.encode(2));
+        poolManager.initialize(poolKey, sqrtPriceX96);
 
         ArrakisMetaVaultMock(metaVault).setTokens(USDC, NATIVE_COIN);
 
@@ -5228,7 +5248,7 @@ contract UniV4StandardModuleTest is TestWrapper {
 
         sqrtPriceX96 = 4_073_749_093_844_602_324_196_220; // 2645,5 USDC/WETH.
 
-        poolManager.unlock(abi.encode(2));
+        poolManager.initialize(poolKey, sqrtPriceX96);
 
         ArrakisMetaVaultMock(metaVault).setTokens(USDC, NATIVE_COIN);
 
@@ -5393,7 +5413,7 @@ contract UniV4StandardModuleTest is TestWrapper {
 
         sqrtPriceX96 = 4_073_749_093_844_602_324_196_220; // 2645,5 USDC/WETH.
 
-        poolManager.unlock(abi.encode(2));
+        poolManager.initialize(poolKey, sqrtPriceX96);
 
         ArrakisMetaVaultMock(metaVault).setTokens(USDC, NATIVE_COIN);
 
@@ -5792,7 +5812,7 @@ contract UniV4StandardModuleTest is TestWrapper {
 
         sqrtPriceX96 = 4_073_749_093_844_602_324_196_220; // 2645,5 USDC/WETH.
 
-        poolManager.unlock(abi.encode(2));
+        poolManager.initialize(poolKey, sqrtPriceX96);
 
         {
             address implementation = address(
@@ -5961,7 +5981,7 @@ contract UniV4StandardModuleTest is TestWrapper {
 
         sqrtPriceX96 = 4_073_749_093_844_602_324_196_220; // 2645,5 USDC/WETH.
 
-        poolManager.unlock(abi.encode(2));
+        poolManager.initialize(poolKey, sqrtPriceX96);
 
         {
             address implementation = address(
@@ -6120,7 +6140,7 @@ contract UniV4StandardModuleTest is TestWrapper {
 
         sqrtPriceX96 = 4_073_749_093_844_602_324_196_220; // 2645,5 USDC/WETH.
 
-        poolManager.unlock(abi.encode(2));
+        poolManager.initialize(poolKey, sqrtPriceX96);
 
         {
             address implementation = address(
@@ -6288,7 +6308,7 @@ contract UniV4StandardModuleTest is TestWrapper {
 
         sqrtPriceX96 = 4_073_749_093_844_602_324_196_220; // 2645,5 USDC/WETH.
 
-        poolManager.unlock(abi.encode(2));
+        poolManager.initialize(poolKey, sqrtPriceX96);
 
         {
             address implementation = address(
@@ -6456,7 +6476,7 @@ contract UniV4StandardModuleTest is TestWrapper {
 
         sqrtPriceX96 = 4_073_749_093_844_602_324_196_220; // 2645,5 USDC/WETH.
 
-        poolManager.unlock(abi.encode(2));
+        poolManager.initialize(poolKey, sqrtPriceX96);
 
         {
             address implementation = address(
@@ -6646,7 +6666,7 @@ contract UniV4StandardModuleTest is TestWrapper {
 
         sqrtPriceX96 = 4_073_749_093_844_602_324_196_220; // 2645,5 USDC/WETH.
 
-        poolManager.unlock(abi.encode(2));
+        poolManager.initialize(poolKey, sqrtPriceX96);
 
         {
             address implementation = address(
@@ -6897,7 +6917,7 @@ contract UniV4StandardModuleTest is TestWrapper {
 
         sqrtPriceX96 = 4_073_749_093_844_602_324_196_220; // 2645,5 USDC/WETH.
 
-        poolManager.unlock(abi.encode(2));
+        poolManager.initialize(poolKey, sqrtPriceX96);
 
         ArrakisMetaVaultMock(metaVault).setTokens(USDC, NATIVE_COIN);
 
@@ -7118,7 +7138,7 @@ contract UniV4StandardModuleTest is TestWrapper {
 
         sqrtPriceX96 = 4_073_749_093_844_602_324_196_220; // 2645,5 USDC/WETH.
 
-        poolManager.unlock(abi.encode(2));
+        poolManager.initialize(poolKey, sqrtPriceX96);
 
         ArrakisMetaVaultMock(metaVault).setTokens(USDC, NATIVE_COIN);
 
@@ -7281,7 +7301,7 @@ contract UniV4StandardModuleTest is TestWrapper {
 
         sqrtPriceX96 = uint160(type(uint128).max) + 1;
 
-        poolManager.unlock(abi.encode(2));
+        poolManager.initialize(poolKey, sqrtPriceX96);
 
         uint256 init0 = 3000e6;
         uint256 init1 = 1e18;

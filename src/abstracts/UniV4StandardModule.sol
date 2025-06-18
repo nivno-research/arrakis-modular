@@ -268,9 +268,7 @@ abstract contract UniV4StandardModule is
 
         // #endregion poolKey initialization.
 
-        IDistributor(distributor).toggleOperator(
-            address(this), collector
-        );
+        distributor.toggleOperator(address(this), collector);
 
         __ReentrancyGuard_init();
         __Pausable_init();
@@ -644,15 +642,15 @@ abstract contract UniV4StandardModule is
 
             (amount0, amount1, fees0, fees1) = UnderlyingV4
                 .totalUnderlyingAtPriceWithFees(
-                UnderlyingPayload({
-                    ranges: poolRanges,
-                    poolManager: poolManager,
-                    self: address(this),
-                    leftOver0: leftOver0,
-                    leftOver1: leftOver1
-                }),
-                sqrtPriceX96_
-            );
+                    UnderlyingPayload({
+                        ranges: poolRanges,
+                        poolManager: poolManager,
+                        self: address(this),
+                        leftOver0: leftOver0,
+                        leftOver1: leftOver1
+                    }),
+                    sqrtPriceX96_
+                );
         }
 
         amount0 = amount0

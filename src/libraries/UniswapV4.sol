@@ -846,8 +846,7 @@ library UniswapV4 {
             uint256 liquidity;
             {
                 PoolId poolId = poolKey_.toId();
-                uint128 positionLiquidity = poolManager_
-                    .getPositionLiquidity(
+                uint128 positionLiquidity = poolManager_.getPositionLiquidity(
                     poolId,
                     Position.calculatePositionKey(
                         address(this),
@@ -944,8 +943,7 @@ library UniswapV4 {
             for (uint256 i; i < length; i++) {
                 IUniV4StandardModule.Range memory range = ranges_[i];
 
-                uint128 positionLiquidity = poolManager
-                    .getPositionLiquidity(
+                uint128 positionLiquidity = poolManager.getPositionLiquidity(
                     poolId,
                     Position.calculatePositionKey(
                         address(this),
@@ -963,8 +961,7 @@ library UniswapV4 {
                 );
 
                 if (liquidity > 0) {
-                    (, BalanceDelta feesAccrued) = poolManager
-                        .modifyLiquidity(
+                    (, BalanceDelta feesAccrued) = poolManager.modifyLiquidity(
                         poolKey,
                         IPoolManager.ModifyLiquidityParams({
                             tickLower: range.tickLower,
@@ -1113,20 +1110,20 @@ library UniswapV4 {
                 if (!poolKey.currency0.isAddressZero()) {
                     IERC20Metadata(Currency.unwrap(poolKey.currency0))
                         .safeTransferFrom(
-                        deposit_.depositor,
-                        address(this),
-                        amount0ToTransfer
-                    );
+                            deposit_.depositor,
+                            address(this),
+                            amount0ToTransfer
+                        );
                 }
             }
 
             if (amount1ToTransfer > 0) {
                 IERC20Metadata(Currency.unwrap(poolKey.currency1))
                     .safeTransferFrom(
-                    deposit_.depositor,
-                    address(this),
-                    amount1ToTransfer
-                );
+                        deposit_.depositor,
+                        address(this),
+                        amount1ToTransfer
+                    );
             }
 
             // #endregion get how much left over we have on poolManager and mint.

@@ -40,6 +40,8 @@ library UnderlyingV4 {
     using TransientStateLibrary for IPoolManager;
     using PoolIdLibrary for PoolKey;
 
+    error SqrtPriceZero();
+
     // solhint-disable-next-line function-max-lines
     function totalUnderlyingForMint(
         UnderlyingPayload memory underlyingPayload_,
@@ -115,6 +117,24 @@ library UnderlyingV4 {
     }
 
     function underlying(
+        RangeData memory underlying_
+    )
+        public
+        view
+        returns (
+            uint256 amount0,
+            uint256 amount1,
+            uint256 fee0,
+            uint256 fee1
+        )
+    {
+        (uint160 sqrtPriceX96_,,,) = underlying_.poolManager.getSlot0(
+            underlying_.range.poolKey.toId()
+        );
+        return underlyingAtPrice(underlying_, sqrtPriceX96_);
+    }
+
+    function underlyingAtPrice(
         RangeData memory underlying_,
         uint160 sqrtPriceX96_
     )
@@ -127,21 +147,18 @@ library UnderlyingV4 {
             uint256 fee1
         )
     {
-        if (sqrtPriceX96_ == 0) {
-            (sqrtPriceX96_,,,) = underlying_.poolManager.getSlot0(
-                underlying_.range.poolKey.toId()
-            );
-        }
+        if (sqrtPriceX96_ == 0) revert SqrtPriceZero();
 
         PositionUnderlying memory positionUnderlying =
-        PositionUnderlying({
-            sqrtPriceX96: sqrtPriceX96_,
-            poolManager: underlying_.poolManager,
-            poolKey: underlying_.range.poolKey,
-            self: underlying_.self,
-            lowerTick: underlying_.range.lowerTick,
-            upperTick: underlying_.range.upperTick
-        });
+            PositionUnderlying({
+                sqrtPriceX96: sqrtPriceX96_,
+                poolManager: underlying_.poolManager,
+                poolKey: underlying_.range.poolKey,
+                self: underlying_.self,
+                lowerTick: underlying_.range.lowerTick,
+                upperTick: underlying_.range.upperTick
+            });
+
         (amount0, amount1, fee0, fee1) =
             getUnderlyingBalances(positionUnderlying);
     }
@@ -364,7 +381,7 @@ library UnderlyingV4 {
         for (uint256 i; i < underlyingPayload_.ranges.length; i++) {
             {
                 (uint256 a0, uint256 a1, uint256 f0, uint256 f1) =
-                underlying(
+                underlyingAtPrice(
                     RangeData({
                         self: underlyingPayload_.self,
                         range: underlyingPayload_.ranges[i],

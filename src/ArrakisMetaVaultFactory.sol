@@ -440,7 +440,8 @@ contract ArrakisMetaVaultFactory is
             IManager(manager).getInitManagementSelector();
 
         /// @dev for initializing management we need to know the vault address,
-        /// so manager should follow this pattern where vault address is the first parameter of the function.
+        /// so manager should follow this pattern where vault address is the
+        /// first parameter of the function.
         bytes memory data = data_.length == 0
             ? abi.encodeWithSelector(selector, vault_)
             : abi.encodePacked(

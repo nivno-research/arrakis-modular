@@ -1,7 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.19;
 
-interface IArrakisMetaVaultPublic {
+import {IArrakisMetaVault} from "../interfaces/IArrakisMetaVault.sol";
+
+interface IArrakisMetaVaultPublic is IArrakisMetaVault {
     // #region errors.
 
     error MintZero();
